@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131d">
+<title>BDS Audio Codec</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1018;--panel:#151a27;--panel2:#1b2232;--line:#293247;--text:#edf2ff;--muted:#98a5bd;--accent:#8b9cff;--green:#68d6a3;--yellow:#f3c969}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#28365d 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1050px;margin:auto;padding:28px 18px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:13px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8395ff,#5268c9);display:grid;place-items:center;font-weight:900;color:white;box-shadow:0 8px 30px #647aff44}.brand h1{font-size:20px;margin:0;letter-spacing:.2px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.version{border:1px solid var(--line);border-radius:999px;padding:6px 11px;color:#b8c4df;font-size:12px}
+.hero{margin:20px 0 24px}.hero h2{font-size:clamp(25px,5vw,38px);line-height:1.12;margin:0 0 10px}.hero p{color:var(--muted);max-width:650px;margin:0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:6px;background:#111622;border:1px solid var(--line);border-radius:14px;margin:24px 0 18px}.tab{border:0;background:transparent;color:var(--muted);padding:10px 17px;border-radius:10px;font:inherit;cursor:pointer}.tab.active{background:#293451;color:white}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.card{background:linear-gradient(180deg,#171d2b,#141925);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0}.card h3{margin:0 0 5px;font-size:17px}.sub{color:var(--muted);font-size:13px;margin:0 0 17px}.drop{border:1px dashed #53617f;background:#111725;border-radius:14px;padding:25px 14px;text-align:center;cursor:pointer;transition:.2s}.drop:hover{border-color:var(--accent);background:#182139}.drop .glyph{font-size:30px;margin-bottom:5px}.drop strong{display:block}.drop small{display:block;color:var(--muted);margin-top:4px}.drop input{display:none}.btn{border:0;border-radius:11px;padding:11px 16px;background:linear-gradient(135deg,#8194ff,#6174dd);color:white;font-weight:700;font-size:14px;cursor:pointer}.btn:disabled{opacity:.4;cursor:not-allowed}.btn.secondary{background:#283249;border:1px solid #3a4761}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.result{margin-top:15px;padding:14px;border-radius:12px;background:#101622;border:1px solid var(--line);color:#dce5fa;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}.result:empty{display:none}.status{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--green);margin-bottom:10px}.dot{width:7px;height:7px;border-radius:50%;background:currentColor}.kv{display:grid;grid-template-columns:1fr auto;gap:9px 12px;font-size:13px}.kv span:nth-child(odd){color:var(--muted)}.kv span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}.notice{border:1px solid #66552e;background:#2b2518;color:#f4d996;padding:12px 14px;border-radius:12px;font-size:13px;margin-top:16px}.hidden{display:none!important}.footer{margin-top:22px;text-align:center;color:#77839a;font-size:12px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.wrap{padding:20px 13px 40px}.card{padding:17px}.top{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo">BDS</div><div><h1>BDS Audio Codec</h1><p>Bipolar Digital Stream</p></div></div>
+    <span class="version">WEB PROTOTYPE · v5.0</span>
+  </header>
+
+  <section class="hero">
+    <h2>Audio, encoded differently.</h2>
+    <p>Antarmuka pengembangan codec BDS. Periksa file audio, validasi container, dan pantau kesiapan pipeline encoding.</p>
+  </section>
+
+  <nav class="tabs" aria-label="Navigasi">
+    <button class="tab active" data-page="encode">Encode</button>
+    <button class="tab" data-page="decode">Decode</button>
+    <button class="tab" data-page="analyzer">Analyzer</button>
+    <button class="tab" data-page="about">About</button>
+  </nav>
+
+  <main>
+    <section id="encode" class="page">
+      <div class="grid">
+        <article class="card">
+          <h3>WAV Input</h3><p class="sub">PCM stereo · 48 kHz · 16-bit atau 24-bit</p>
+          <label class="drop" for="wavFile"><div class="glyph">♫</div><strong>Pilih file WAV</strong><small>Ketuk untuk memilih file dari perangkat</small><input id="wavFile" type="file" accept=".wav,audio/wav"></label>
+          <div class="actions"><button class="btn" id="checkWav">Periksa WAV</button></div>
+          <div class="result" id="wavResult" aria-live="polite"></div>
+        </article>
+        <aside class="card">
+          <h3>Encoder Status</h3><p class="sub">Konfigurasi target BDS v5</p>
+          <div class="kv"><span>Input</span><span>PCM WAV</span><span>Sample rate</span><span>48.000 Hz</span><span>Bit depth</span><span>16 / 24-bit</span><span>Channel</span><span>Stereo</span><span>Oversampling</span><span>8×</span><span>Output</span><span>.bds</span></div>
+          <div class="notice">Encoder audio penuh belum terhubung. Pemeriksaan WAV sudah berjalan di browser; encoding BDS akan ditambahkan pada tahap berikutnya.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="decode" class="page hidden">
+      <div class="grid">
+        <article class="card">
+          <h3>BDS Input</h3><p class="sub">Pilih file container berekstensi .bds</p>
+          <label class="drop" for="bdsDecodeFile"><div class="glyph">▧</div><strong>Pilih file BDS</strong><small>File diproses secara lokal di browser</small><input id="bdsDecodeFile" type="file" accept=".bds"></label>
+          <div class="result" id="decodeResult"></div>
+        </article>
+        <aside class="card"><h3>Decoder Status</h3><p class="sub">BDS → PCM WAV</p><div class="notice">Decoder audio penuh belum tersedia. Gunakan Analyzer untuk memeriksa header, metadata, ukuran payload, dan CRC32.</div></aside>
+      </div>
+    </section>
+
+    <section id="analyzer" class="page hidden">
+      <div class="grid">
+        <article class="card">
+          <h3>BDS Container Analyzer</h3><p class="sub">Validasi header dan integritas payload</p>
+          <label class="drop" for="bdsFile"><div class="glyph">⌁</div><strong>Pilih file BDS</strong><small>Magic · Header · Metadata · CRC32</small><input id="bdsFile" type="file" accept=".bds"></label>
+          <div class="actions"><button class="btn" id="analyzeBds">Analisis container</button></div>
+          <div class="result" id="bdsResult" aria-live="polite"></div>
+        </article>
+        <aside class="card"><h3>Container Specification</h3><p class="sub">Struktur header prototype</p><div class="kv"><span>Magic</span><span>BDS1</span><span>Header</span><span>40 byte</span><span>Metadata</span><span>JSON</span><span>Integrity</span><span>CRC32</span><span>Max metadata</span><span>1 MiB</span><span>Byte order</span><span>Little-endian</span></div></aside>
+      </div>
+    </section>
+
+    <section id="about" class="page hidden">
+      <article class="card"><h3>Tentang BDS</h3><p class="sub">Bipolar Digital Stream · Experimental audio codec</p><div class="kv"><span>Project version</span><span>5.0</span><span>Target sample rate</span><span>48 kHz</span><span>Bit depth</span><span>16 / 24-bit</span><span>Channels</span><span>Stereo</span><span>OSR</span><span>8×</span><span>Container extension</span><span>.bds</span></div><div class="notice">Status proyek: web UI dan WAV validation prototype. Encoding dan decoding audio belum tersedia di versi halaman ini.</div></article>
+    </section>
+  </main>
+  <footer class="footer">BDS Audio Codec · Experimental project · Runs locally in your browser</footer>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === btn));
+  document.querySelectorAll(".page").forEach(x => x.classList.toggle("hidden", x.id !== btn.dataset.page));
+}));
+
+function readAscii(view, offset, length) {
+  let s = ""; for (let i=0;i<length;i++) s += String.fromCharCode(view.getUint8(offset+i)); return s;
+}
+function parseWav(buffer) {
+  const v = new DataView(buffer);
+  if (buffer.byteLength < 44 || readAscii(v,0,4)!=="RIFF" || readAscii(v,8,4)!=="WAVE") throw Error("File bukan WAV RIFF yang valid.");
+  let offset=12, fmt=null, dataSize=null;
+  while(offset+8<=buffer.byteLength){
+    const id=readAscii(v,offset,4), size=v.getUint32(offset+4,true), start=offset+8;
+    if(start+size>buffer.byteLength) throw Error("Chunk WAV terpotong atau ukuran file tidak cocok.");
+    if(id==="fmt "){
+      if(size<16) throw Error("Chunk fmt tidak lengkap.");
+      fmt={format:v.getUint16(start,true),channels:v.getUint16(start+2,true),rate:v.getUint32(start+4,true),byteRate:v.getUint32(start+8,true),blockAlign:v.getUint16(start+12,true),bits:v.getUint16(start+14,true)};
+    }
+    if(id==="data") dataSize=size;
+    offset=start+size+(size%2);
+  }
+  if(!fmt || dataSize===null) throw Error("Chunk fmt atau data tidak ditemukan.");
+  if(fmt.format!==1) throw Error("WAV harus PCM integer tanpa kompresi (format code 1).");
+  if(fmt.channels!==2) throw Error("WAV harus stereo. Ditemukan "+fmt.channels+" channel.");
+  if(fmt.rate!==48000) throw Error("Sample rate harus 48.000 Hz. Ditemukan "+fmt.rate+" Hz.");
+  if(![16,24].includes(fmt.bits)) throw Error("Bit depth harus 16-bit atau 24-bit. Ditemukan "+fmt.bits+"-bit.");
+  const frames=Math.floor(dataSize/fmt.blockAlign);
+  return {channels:fmt.channels,rate:fmt.rate,bits:fmt.bits,frames,duration:frames/fmt.rate,dataSize};
+}
+$("checkWav").addEventListener("click", async()=>{
+  const f=$("wavFile").files[0]; const out=$("wavResult");
+  if(!f){out.textContent="Pilih file WAV terlebih dahulu.";return;}
+  try{
+    const info=parseWav(await f.arrayBuffer());
+    out.textContent="✓ WAV VALID\n\nFile: "+f.name+"\nFormat: PCM integer\nSample rate: "+info.rate.toLocaleString("id-ID")+" Hz\nBit depth: "+info.bits+"-bit\nChannel: Stereo\nFrames: "+info.frames.toLocaleString("id-ID")+"\nDurasi: "+info.duration.toFixed(3)+" detik\nData PCM: "+info.dataSize.toLocaleString("id-ID")+" byte";
+  }catch(e){out.textContent="✕ WAV TIDAK VALID\n\n"+e.message;}
+});
+function crc32(bytes){
+  let crc=0xffffffff;
+  for(let i=0;i<bytes.length;i++){crc^=bytes[i];for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}
+  return (crc^0xffffffff)>>>0;
+}
+function analyzeBds(buffer){
+  const v=new DataView(buffer), bytes=new Uint8Array(buffer);
+  if(buffer.byteLength<40) throw Error("File lebih kecil dari header 40 byte.");
+  if(readAscii(v,0,4)!=="BDS1") throw Error("Magic number bukan BDS1.");
+  const version=v.getUint16(4,true), headerSize=v.getUint16(6,true), rate=v.getUint32(8,true);
+  const depth=v.getUint8(12), channels=v.getUint8(13), osr=v.getUint16(14,true);
+  const frames=Number(v.getBigUint64(20,true)), payloadSize=Number(v.getBigUint64(28,true));
+  const expected=v.getUint32(36,true), metadataSize=v.getUint32(40-4,true);
+  // Header struct <4sHHIBBHIQQII is 44 bytes (not 40).
+  const actualHeaderSize=44;
+  if(buffer.byteLength<actualHeaderSize) throw Error("Header v1 tidak lengkap (butuh 44 byte).");
+  const payloadCrc=v.getUint32(36,true), metaSize=v.getUint32(40,true);
+  if(headerSize!==actualHeaderSize) throw Error("Ukuran header tidak sesuai. Diharapkan 44 byte.");
+  if(metaSize>1048576) throw Error("Metadata melebihi batas 1 MiB.");
+  if(actualHeaderSize+metaSize+payloadSize!==buffer.byteLength) throw Error("Ukuran file tidak cocok dengan metadata dan payload.");
+  const metaBytes=bytes.slice(actualHeaderSize,actualHeaderSize+metaSize);
+  let metadata; try{metadata=JSON.parse(new TextDecoder().decode(metaBytes));}catch{throw Error("Metadata JSON tidak valid.");}
+  const payload=bytes.slice(actualHeaderSize+metaSize);
+  const actual=crc32(payload), ok=actual===payloadCrc;
+  return "Container "+(ok?"VALID":"CRC MISMATCH")+"\n\nVersi: "+version+"\nHeader: "+headerSize+" byte\nSample rate: "+rate+" Hz\nBit depth: "+depth+"-bit\nChannel: "+channels+"\nOSR: "+osr+"×\nFrames: "+frames.toLocaleString("id-ID")+"\nPayload: "+payloadSize.toLocaleString("id-ID")+" byte\nMetadata: "+metaSize+" byte\nCRC32 tersimpan: "+payloadCrc.toString(16).toUpperCase().padStart(8,"0")+"\nCRC32 terhitung: "+actual.toString(16).toUpperCase().padStart(8,"0")+"\n\nMetadata:\n"+JSON.stringify(metadata,null,2)+"\n\nCatatan: status container valid tidak menjamin payload merupakan audio BDS yang dapat didekode.";
+}
+$("analyzeBds").addEventListener("click",async()=>{
+  const f=$("bdsFile").files[0],out=$("bdsResult");if(!f){out.textContent="Pilih file BDS terlebih dahulu.";return;}
+  try{out.textContent=analyzeBds(await f.arrayBuffer());}catch(e){out.textContent="✕ BDS TIDAK VALID\n\n"+e.message;}
+});
+$("bdsDecodeFile").addEventListener("change",()=>{$("decodeResult").textContent=$("bdsDecodeFile").files[0]?"File dipilih: "+$("bdsDecodeFile").files[0].name+"\nDecoder belum tersedia. Buka Analyzer untuk memeriksa container.":"";});
+</script>
+</body>
+</html>

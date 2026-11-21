@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131d">
+<title>BDS Audio Codec v5.1</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1018;--panel:#151a27;--panel2:#1b2232;--line:#293247;--text:#edf2ff;--muted:#98a5bd;--accent:#8b9cff;--green:#68d6a3;--yellow:#f3c969;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#28365d 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1050px;margin:auto;padding:28px 18px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:13px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8395ff,#5268c9);display:grid;place-items:center;font-weight:900;color:white;box-shadow:0 8px 30px #647aff44}.brand h1{font-size:20px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.version{border:1px solid var(--line);border-radius:999px;padding:6px 11px;color:#b8c4df;font-size:12px}
+.hero{margin:20px 0 24px}.hero h2{font-size:clamp(25px,5vw,38px);line-height:1.12;margin:0 0 10px}.hero p{color:var(--muted);max-width:700px;margin:0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:6px;background:#111622;border:1px solid var(--line);border-radius:14px;margin:24px 0 18px}.tab{border:0;background:transparent;color:var(--muted);padding:10px 17px;border-radius:10px;font:inherit;cursor:pointer}.tab.active{background:#293451;color:white}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.card{background:linear-gradient(180deg,#171d2b,#141925);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0}.card h3{margin:0 0 5px;font-size:17px}.sub{color:var(--muted);font-size:13px;margin:0 0 17px}.drop{display:block;border:1px dashed #53617f;background:#111725;border-radius:14px;padding:25px 14px;text-align:center;cursor:pointer;transition:.2s}.drop:hover{border-color:var(--accent);background:#182139}.drop .glyph{font-size:30px;margin-bottom:5px}.drop strong{display:block}.drop small{display:block;color:var(--muted);margin-top:4px}.drop input{display:none}.btn{border:0;border-radius:11px;padding:11px 16px;background:linear-gradient(135deg,#8194ff,#6174dd);color:white;font-weight:700;font-size:14px;cursor:pointer}.btn:disabled{opacity:.4;cursor:not-allowed}.btn.secondary{background:#283249;border:1px solid #3a4761}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.result{margin-top:15px;padding:14px;border-radius:12px;background:#101622;border:1px solid var(--line);color:#dce5fa;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}.result:empty{display:none}.kv{display:grid;grid-template-columns:1fr auto;gap:9px 12px;font-size:13px}.kv span:nth-child(odd){color:var(--muted)}.kv span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}.notice{border:1px solid #66552e;background:#2b2518;color:#f4d996;padding:12px 14px;border-radius:12px;font-size:13px;margin-top:16px}.progress{height:8px;border-radius:99px;background:#252e42;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:linear-gradient(90deg,#8194ff,#68d6a3);transition:width .12s}.hidden{display:none!important}.footer{margin-top:22px;text-align:center;color:#77839a;font-size:12px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.wrap{padding:20px 13px 40px}.card{padding:17px}.top{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="logo">BDS</div><div><h1>BDS Audio Codec</h1><p>Bipolar Digital Stream</p></div></div><span class="version">WEB CODEC · v5.1</span></header>
+<section class="hero"><h2>Audio, encoded differently.</h2><p>Encode WAV menjadi BDS dan decode kembali menjadi WAV. Seluruh proses berjalan secara lokal di browser.</p></section>
+<nav class="tabs" aria-label="Navigasi">
+<button class="tab active" data-page="encode">Encode</button><button class="tab" data-page="decode">Decode</button><button class="tab" data-page="analyzer">Analyzer</button><button class="tab" data-page="about">About</button>
+</nav>
+<main>
+<section id="encode" class="page"><div class="grid">
+<article class="card"><h3>WAV → BDS</h3><p class="sub">PCM stereo · 48 kHz · 16/24-bit · OSR 8×</p>
+<label class="drop" for="wavFile"><div class="glyph">♫</div><strong>Pilih file WAV</strong><small>PCM integer stereo 48 kHz, 16-bit atau 24-bit</small><input id="wavFile" type="file" accept=".wav,audio/wav"></label>
+<div class="actions"><button class="btn" id="encodeBtn">Encode ke BDS</button></div>
+<div class="progress hidden" id="encProgress"><div class="bar" id="encBar"></div></div><div class="result" id="wavResult" aria-live="polite"></div>
+</article>
+<aside class="card"><h3>Encoder</h3><p class="sub">Konfigurasi codec</p><div class="kv"><span>Input</span><span>PCM WAV</span><span>Sample rate</span><span>48.000 Hz</span><span>Bit depth</span><span>16 / 24-bit</span><span>Channel</span><span>Stereo</span><span>Oversampling</span><span>8×</span><span>Modulator</span><span>2nd-order</span><span>Symbol packing</span><span>Radix-3</span><span>Output</span><span>.bds</span></div>
+<div class="notice">Prototype fungsional. Oversampling menggunakan interpolasi linear dan decoder memakai FIR Blackman 129-tap. Kualitas audio belum dianggap final.</div></aside>
+</div></section>
+<section id="decode" class="page hidden"><div class="grid">
+<article class="card"><h3>BDS → WAV</h3><p class="sub">Rekonstruksi audio dari container BDS v1</p>
+<label class="drop" for="bdsDecodeFile"><div class="glyph">▧</div><strong>Pilih file BDS</strong><small>File hasil encoder BDS v5.1</small><input id="bdsDecodeFile" type="file" accept=".bds"></label>
+<div class="actions"><button class="btn" id="decodeBtn">Decode ke WAV</button></div>
+<div class="progress hidden" id="decProgress"><div class="bar" id="decBar"></div></div><div class="result" id="decodeResult" aria-live="polite"></div>
+</article>
+<aside class="card"><h3>Decoder</h3><p class="sub">BDS → PCM WAV</p><div class="kv"><span>Container</span><span>BDS1 / v1</span><span>Integrity</span><span>CRC32</span><span>Symbol map</span><span>Radix-3</span><span>Reconstruction</span><span>FIR 129-tap</span><span>Output</span><span>PCM WAV</span></div>
+<div class="notice">Decoder memvalidasi ukuran file, metadata, kode ternary, dan CRC32 sebelum membuat WAV.</div></aside>
+</div></section>
+<section id="analyzer" class="page hidden"><div class="grid">
+<article class="card"><h3>BDS Container Analyzer</h3><p class="sub">Validasi header dan integritas payload</p>
+<label class="drop" for="bdsFile"><div class="glyph">⌁</div><strong>Pilih file BDS</strong><small>Magic · Header · Metadata · CRC32</small><input id="bdsFile" type="file" accept=".bds"></label>
+<div class="actions"><button class="btn" id="analyzeBds">Analisis container</button></div><div class="result" id="bdsResult" aria-live="polite"></div></article>
+<aside class="card"><h3>Container Specification</h3><p class="sub">BDS v1</p><div class="kv"><span>Magic</span><span>BDS1</span><span>Header</span><span>44 byte</span><span>Metadata</span><span>JSON UTF-8</span><span>Integrity</span><span>CRC32 payload</span><span>Max metadata</span><span>1 MiB</span><span>Byte order</span><span>Little-endian</span></div></aside>
+</div></section>
+<section id="about" class="page hidden"><article class="card"><h3>Tentang BDS</h3><p class="sub">Bipolar Digital Stream · Experimental audio codec</p><div class="kv"><span>Codec version</span><span>5.1 prototype</span><span>Sample rate</span><span>48 kHz</span><span>Bit depth</span><span>16 / 24-bit</span><span>Channels</span><span>Stereo</span><span>OSR</span><span>8×</span><span>Symbol coding</span><span>Ternary / Radix-3</span><span>Container</span><span>BDS1 v1</span></div><div class="notice">BDS saat ini merupakan codec eksperimental. Ukuran file dan kualitas hasil bergantung pada sinyal, parameter modulasi, serta filter rekonstruksi. Belum ada klaim setara atau lebih baik dari FLAC/DSD.</div></article></section>
+</main>
+<footer class="footer">BDS Audio Codec · Runs locally in your browser · No server upload</footer>
+</div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id), OSR=8, RATE=48000, TAPS=129, CUTOFF=0.05875, HEADER=44;
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===btn));document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==btn.dataset.page));}));
+function ascii(v,o,n){let s="";for(let i=0;i<n;i++)s+=String.fromCharCode(v.getUint8(o+i));return s;}
+function parseWav(buffer,decodeSamples=false){
+ const v=new DataView(buffer);if(buffer.byteLength<44||ascii(v,0,4)!=="RIFF"||ascii(v,8,4)!=="WAVE")throw Error("File bukan WAV RIFF yang valid.");
+ let off=12,fmt=null,dataOff=-1,dataSize=0;
+ while(off+8<=buffer.byteLength){const id=ascii(v,off,4),size=v.getUint32(off+4,true),start=off+8;if(start+size>buffer.byteLength)throw Error("Chunk WAV terpotong.");
+  if(id==="fmt "){if(size<16)throw Error("Chunk fmt tidak lengkap.");fmt={format:v.getUint16(start,true),channels:v.getUint16(start+2,true),rate:v.getUint32(start+4,true),byteRate:v.getUint32(start+8,true),blockAlign:v.getUint16(start+12,true),bits:v.getUint16(start+14,true)};}
+  if(id==="data"){dataOff=start;dataSize=size;}off=start+size+(size&1);
+ }
+ if(!fmt||dataOff<0)throw Error("Chunk fmt/data tidak ditemukan.");
+ if(fmt.format!==1)throw Error("Hanya WAV PCM integer (format code 1) yang didukung.");
+ if(fmt.channels!==2||fmt.rate!==RATE||![16,24].includes(fmt.bits))throw Error("Format wajib stereo, 48.000 Hz, 16-bit atau 24-bit.");
+ const bytes=fmt.bits/8;if(fmt.blockAlign!==bytes*2||dataSize%fmt.blockAlign!==0)throw Error("Block alignment atau ukuran data WAV tidak valid.");
+ const frames=dataSize/fmt.blockAlign,info={channels:2,rate:fmt.rate,bits:fmt.bits,frames,duration:frames/RATE,dataSize,dataOff};
+ if(!decodeSamples)return info;
+ const left=new Float32Array(frames),right=new Float32Array(frames);
+ for(let i=0;i<frames;i++){const p=dataOff+i*fmt.blockAlign;left[i]=readPcm(v,p,fmt.bits);right[i]=readPcm(v,p+bytes,fmt.bits);}
+ return {...info,left,right};
+}
+function readPcm(v,p,bits){if(bits===16)return v.getInt16(p,true)/32768;let x=v.getUint8(p)|(v.getUint8(p+1)<<8)|(v.getUint8(p+2)<<16);if(x&0x800000)x-=0x1000000;return x/8388608;}
+function crc32(bytes){let c=0xffffffff;for(let i=0;i<bytes.length;i++){c^=bytes[i];for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;}
+function makeFilter(){const h=new Float64Array(TAPS),m=(TAPS-1)/2;let sum=0;for(let i=0;i<TAPS;i++){const x=i-m, sinc=x===0?2*CUTOFF:Math.sin(2*Math.PI*CUTOFF*x)/(Math.PI*x),w=0.42-0.5*Math.cos(2*Math.PI*i/(TAPS-1))+0.08*Math.cos(4*Math.PI*i/(TAPS-1));h[i]=sinc*w;sum+=h[i];}for(let i=0;i<TAPS;i++)h[i]/=sum;return h;}
+const FILTER=makeFilter();
+function setProgress(prefix,p){$(prefix+"Progress").classList.remove("hidden");$(prefix+"Bar").style.width=Math.min(100,p).toFixed(1)+"%";}
+function hideProgress(prefix){$(prefix+"Progress").classList.add("hidden");$(prefix+"Bar").style.width="0%";}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+const yieldUI=()=>new Promise(r=>setTimeout(r,0));
+function makeBdsHeader(info,payload,metadata){
+ const meta=new TextEncoder().encode(JSON.stringify(metadata));if(meta.length>1048576)throw Error("Metadata terlalu besar.");
+ const out=new Uint8Array(HEADER+meta.length+payload.length),v=new DataView(out.buffer);
+ out.set([66,68,83,49],0);v.setUint16(4,1,true);v.setUint16(6,HEADER,true);v.setUint32(8,RATE,true);v.setUint8(12,info.bits);v.setUint8(13,2);v.setUint16(14,OSR,true);v.setUint32(16,0,true);v.setBigUint64(20,BigInt(info.frames),true);v.setBigUint64(28,BigInt(payload.length),true);v.setUint32(36,crc32(payload),true);v.setUint32(40,meta.length,true);
+ out.set(meta,HEADER);out.set(payload,HEADER+meta.length);return out;
+}
+async function encodeBds(info){
+ const total=info.frames*2*OSR,byteCount=Math.ceil(total/5),payload=new Uint8Array(byteCount);
+ let outPos=0,group=0,digits=0,e1=[0,0],e2=[0,0];
+ function putSymbol(sym){const d=sym<0?0:sym===0?1:2;group=group*3+d;digits++;if(digits===5){payload[outPos++]=group;group=0;digits=0;}}
+ const CHUNK=1024;
+ for(let base=0;base<info.frames;base+=CHUNK){
+  const end=Math.min(info.frames,base+CHUNK);
+  for(let i=base;i<end;i++){
+   for(let ch=0;ch<2;ch++){
+    const arr=ch===0?info.left:info.right,x0=arr[i],x1=arr[Math.min(i+1,info.frames-1)];
+    for(let phase=0;phase<OSR;phase++){
+     const sample=x0+(x1-x0)*(phase/OSR),value=sample+2*e1[ch]-e2[ch];
+     const sym=value>0.5?1:value< -0.5?-1:0,error=value-sym;e2[ch]=e1[ch];e1[ch]=error;putSymbol(sym);
+    }
+   }
+  }
+  setProgress("enc",end/info.frames*100);if(base% (CHUNK*4)===0)await yieldUI();
+ }
+ if(digits){while(digits<5){group=group*3+1;digits++;}payload[outPos++]=group;}
+ if(outPos!==payload.length)throw Error("Kesalahan internal saat packing Radix-3.");
+ const meta={codec:"BDS",codec_version:"5.1-prototype",symbol_mapping:{"0":-1,"1":0,"2":1},packing:"5 ternary symbols per byte, big-endian radix-3 digits",symbol_order:"frame-channel-phase",osr:OSR,modulator:"second-order error feedback",oversampling:"linear interpolation",decoder_filter:{type:"Blackman-windowed sinc FIR",taps:TAPS,cutoff_cycles_per_sample:CUTOFF},padding_symbol:0};
+ return makeBdsHeader(info,payload,meta);
+}
+function parseBds(buffer){
+ if(buffer.byteLength<HEADER)throw Error("Header BDS terpotong.");
+ const v=new DataView(buffer),bytes=new Uint8Array(buffer);
+ if(ascii(v,0,4)!=="BDS1")throw Error("Magic number bukan BDS1.");
+ const version=v.getUint16(4,true),header=v.getUint16(6,true),rate=v.getUint32(8,true),bits=v.getUint8(12),channels=v.getUint8(13),osr=v.getUint16(14,true),framesBig=v.getBigUint64(20,true),payloadBig=v.getBigUint64(28,true),storedCrc=v.getUint32(36,true),metaSize=v.getUint32(40,true);
+ if(version!==1||header!==HEADER)throw Error("Versi atau ukuran header tidak didukung.");
+ if(rate!==RATE||channels!==2||![16,24].includes(bits)||osr!==OSR)throw Error("Parameter audio pada header tidak didukung.");
+ if(metaSize>1048576)throw Error("Metadata melebihi 1 MiB.");
+ const frames=Number(framesBig),payloadSize=Number(payloadBig);if(!Number.isSafeInteger(frames)||!Number.isSafeInteger(payloadSize))throw Error("Ukuran file terlalu besar untuk browser.");
+ if(HEADER+metaSize+payloadSize!==buffer.byteLength)throw Error("Ukuran file tidak cocok dengan header.");
+ const metaBytes=bytes.subarray(HEADER,HEADER+metaSize);let metadata;try{metadata=JSON.parse(new TextDecoder().decode(metaBytes));}catch{throw Error("Metadata JSON tidak valid.");}
+ const payload=bytes.subarray(HEADER+metaSize);if(crc32(payload)!==storedCrc)throw Error("CRC32 payload gagal. File mungkin rusak.");
+ const symbolCount=frames*channels*osr,expected=Math.ceil(symbolCount/5);if(payloadSize!==expected)throw Error("Ukuran payload tidak sesuai jumlah simbol.");
+ return {version,rate,bits,channels,osr,frames,payload,metadata,payloadSize,storedCrc,symbolCount};
+}
+async function decodeBds(info){
+ const left=new Float32Array(info.frames*OSR),right=new Float32Array(info.frames*OSR);
+ let symIndex=0;
+ for(let bi=0;bi<info.payload.length;bi++){
+  let n=info.payload[bi];if(n>242)throw Error("Byte Radix-3 tidak valid (nilai 243–255).");
+  const ds=[0,0,0,0,0];for(let j=4;j>=0;j--){ds[j]=n%3;n=Math.floor(n/3);}
+  for(let j=0;j<5;j++){
+   if(symIndex>=info.symbolCount){if(ds[j]!==1)throw Error("Padding Radix-3 tidak valid.");continue;}
+   const frameChPhase=Math.floor(symIndex/OSR),phase=symIndex%OSR,ch=frameChPhase%2,frame=Math.floor(frameChPhase/2),val=ds[j]===0?-1:ds[j]===1?0:1;
+   (ch===0?left:right)[frame*OSR+phase]=val;symIndex++;
+  }
+  if(bi%65536===0){setProgress("dec",bi/info.payload.length*45);if(bi%262144===0)await yieldUI();}
+ }
+ const pcm=new Float32Array(info.frames*2),mid=(TAPS-1)/2,CHUNK=512;
+ for(let base=0;base<info.frames;base+=CHUNK){
+  const end=Math.min(info.frames,base+CHUNK);
+  for(let i=base;i<end;i++){
+   let sums=[0,0];for(let k=0;k<TAPS;k++){const idx=Math.max(0,Math.min(info.frames*OSR-1,i*OSR+k-mid)),c=FILTER[k];sums[0]+=left[idx]*c;sums[1]+=right[idx]*c;}
+   pcm[i*2]=sums[0];pcm[i*2+1]=sums[1];
+  }
+  setProgress("dec",45+end/info.frames*55);if(base%(CHUNK*4)===0)await yieldUI();
+ }
+ return pcm;
+}
+function buildWav(pcm,frames,bits){
+ const bytes=bits/8,dataSize=frames*2*bytes,buf=new ArrayBuffer(44+dataSize),v=new DataView(buf);
+ function put(s,o){for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));}
+ put("RIFF",0);v.setUint32(4,36+dataSize,true);put("WAVE",8);put("fmt ",12);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,RATE,true);v.setUint32(28,RATE*2*bytes,true);v.setUint16(32,2*bytes,true);v.setUint16(34,bits,true);put("data",36);v.setUint32(40,dataSize,true);
+ let p=44;for(let i=0;i<pcm.length;i++){let x=Math.max(-1,Math.min(1,pcm[i]));if(bits===16){let q=Math.max(-32768,Math.min(32767,Math.round(x*32768)));v.setInt16(p,q,true);p+=2;}else{let q=Math.max(-8388608,Math.min(8388607,Math.round(x*8388608)));if(q<0)q+=0x1000000;v.setUint8(p,q&255);v.setUint8(p+1,(q>>>8)&255);v.setUint8(p+2,(q>>>16)&255);p+=3;}}
+ return new Blob([buf],{type:"audio/wav"});
+}
+$("encodeBtn").addEventListener("click",async()=>{
+ const f=$("wavFile").files[0],out=$("wavResult"),btn=$("encodeBtn");if(!f){out.textContent="Pilih file WAV terlebih dahulu.";return;}
+ btn.disabled=true;out.textContent="Membaca dan memvalidasi WAV…";setProgress("enc",0);
+ try{const parsed=parseWav(await f.arrayBuffer(),true);out.textContent="WAV valid. Menjalankan modulator dan packing Radix-3…";
+  const bds=await encodeBds(parsed),name=f.name.replace(/\.wav$/i,"")+".bds";downloadBlob(new Blob([bds],{type:"application/octet-stream"}),name);
+  const ratio=(bds.length/parsed.dataSize*100).toFixed(1);
+  out.textContent="✓ ENCODING SELESAI\n\nFile: "+name+"\nDurasi: "+parsed.duration.toFixed(2)+" detik\nPCM: "+parsed.dataSize.toLocaleString("id-ID")+" byte\nBDS: "+bds.length.toLocaleString("id-ID")+" byte\nRasio ukuran: "+ratio+"% dari data PCM\n\nFile .bds sudah diunduh.";
+ }catch(e){out.textContent="✕ ENCODING GAGAL\n\n"+e.message;}finally{btn.disabled=false;hideProgress("enc");}
+});
+$("decodeBtn").addEventListener("click",async()=>{
+ const f=$("bdsDecodeFile").files[0],out=$("decodeResult"),btn=$("decodeBtn");if(!f){out.textContent="Pilih file BDS terlebih dahulu.";return;}
+ btn.disabled=true;out.textContent="Memvalidasi container dan CRC32…";setProgress("dec",0);
+ try{const parsed=parseBds(await f.arrayBuffer());out.textContent="Container valid. Menjalankan unpack dan rekonstruksi FIR…";
+  const pcm=await decodeBds(parsed),wav=buildWav(pcm,parsed.frames,parsed.bits),name=f.name.replace(/\.bds$/i,"")+"_decoded.wav";downloadBlob(wav,name);
+  out.textContent="✓ DECODING SELESAI\n\nFile: "+name+"\nDurasi: "+(parsed.frames/RATE).toFixed(2)+" detik\nSample rate: "+RATE.toLocaleString("id-ID")+" Hz\nBit depth: "+parsed.bits+"-bit\nChannel: Stereo\nPayload BDS: "+parsed.payloadSize.toLocaleString("id-ID")+" byte\nCRC32: valid\n\nFile WAV hasil rekonstruksi sudah diunduh.";
+ }catch(e){out.textContent="✕ DECODING GAGAL\n\n"+e.message;}finally{btn.disabled=false;hideProgress("dec");}
+});
+function analyze(buffer){
+ const b=parseBds(buffer);return "CONTAINER VALID\n\nVersi: "+b.version+"\nHeader: "+HEADER+" byte\nSample rate: "+b.rate+" Hz\nBit depth: "+b.bits+"-bit\nChannel: "+b.channels+"\nOSR: "+b.osr+"×\nFrames: "+b.frames.toLocaleString("id-ID")+"\nDurasi: "+(b.frames/b.rate).toFixed(3)+" detik\nPayload: "+b.payloadSize.toLocaleString("id-ID")+" byte\nSimbol: "+b.symbolCount.toLocaleString("id-ID")+"\nCRC32: "+b.storedCrc.toString(16).toUpperCase().padStart(8,"0")+" (valid)\n\nMetadata:\n"+JSON.stringify(b.metadata,null,2);
+}
+$("analyzeBds").addEventListener("click",async()=>{const f=$("bdsFile").files[0],out=$("bdsResult");if(!f){out.textContent="Pilih file BDS terlebih dahulu.";return;}try{out.textContent=analyze(await f.arrayBuffer());}catch(e){out.textContent="✕ BDS TIDAK VALID\n\n"+e.message;}});
+</script>
+</body></html>
